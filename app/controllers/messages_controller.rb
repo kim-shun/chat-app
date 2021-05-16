@@ -1,7 +1,8 @@
 class MessagesController < ApplicationController
   def index
-    @message = Message.new
-    @room = Room.find(params[:room_id])
+    @message = Message.new   #messages/_main_chatのform_withのモデルオプションに指定したインスタンスのセット
+    @room = Room.find(params[:room_id]) # ↑ form_withの指定のチャットルームのレコード情報。作成したチャットルームにアクセスできる。
+    @messages = @room.messages.includes(:user) #一覧画面で表示するメッセージ情報の取得。includesでユーザー情報を1度のアクセスでまとめて取得
   end
 
   def create
@@ -10,6 +11,7 @@ class MessagesController < ApplicationController
     if @message.save
       redirect_to room_messages_path(@room)
     else
+      @messages = @room.messages.includes(:user) #renderの時にエラーが起きないようにする
       render :index
     end
   end
